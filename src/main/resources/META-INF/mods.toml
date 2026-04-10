@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
-license = "All Rights Reserved"
+license = "MIT"
 
 [[mods]]
 modId = "justtrialspawners"
@@ -28,5 +28,12 @@ side = "BOTH"
 modId = "ftblibrary"
 mandatory = true
 versionRange = "[2001.2,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.justtrialspawners]]
+modId = "architectury"
+mandatory = true
+versionRange = "[9.2,)"
 ordering = "AFTER"
 side = "BOTH"
