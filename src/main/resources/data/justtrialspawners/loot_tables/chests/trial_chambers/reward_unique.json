@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:golden_apple", "weight": 4 },
+        { "type": "minecraft:item", "name": "minecraft:coast_armor_trim_smithing_template", "weight": 3 },
+        { "type": "minecraft:item", "name": "minecraft:globe_banner_pattern", "weight": 2 },
+        { "type": "minecraft:item", "name": "minecraft:music_disc_otherside", "weight": 2 },
+        { "type": "minecraft:item", "name": "minecraft:trident", "weight": 1 }
+      ]
+    }
+  ]
+}

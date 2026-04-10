@@ -1,0 +1,83 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'java'
+}
+
+version = "${jar_version}-${mod_version}"
+group = mod_group
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: 'parchment', version: '2023.09.03-1.20.1'
+
+    runs {
+        configureEach {
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            // Enable mixin refmap remapping so third-party mods' SRG refmaps work with parchment
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${project.buildDir}/createSrgToMcp/output.srg"
+        }
+        client {
+            workingDirectory project.file('run')
+        }
+        server {
+            workingDirectory project.file('run')
+        }
+        data {
+            workingDirectory project.file('run')
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.saps.dev/minecraft"
+        content { includeGroup "dev.ftb.mods" }
+    }
+    maven {
+        url "https://maven.architectury.dev/"
+        content { includeGroup "dev.architectury" }
+    }
+    maven {
+        // JEI
+        url "https://maven.blamejared.com/"
+        content { includeGroup "mezz.jei" }
+    }
+    maven {
+        // CurseForge
+        url "https://cursemaven.com"
+        content { includeGroup "curse.maven" }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // FTB Library + Architectury - required dependencies (via CurseForge maven for fg.deobf compatibility)
+    implementation fg.deobf("curse.maven:ftb-library-forge-404465:7296748")
+    implementation fg.deobf("curse.maven:architectury-api-419699:5137938")
+
+    // JEI - dev environment
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:15.20.0.106")
+
+    // Jade - dev environment (Forge 1.20.1)
+    runtimeOnly fg.deobf("curse.maven:jade-324717:6855440")
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title'  : mod_id,
+            'Specification-Version': mod_version,
+            'Implementation-Title' : mod_id,
+            'Implementation-Version': mod_version,
+        ])
+    }
+}

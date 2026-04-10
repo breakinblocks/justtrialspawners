@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "justtrialspawners:block/vault_bottom_ominous",
+    "side": "justtrialspawners:block/vault_side_off_ominous",
+    "top": "justtrialspawners:block/vault_top_ominous"
+  }
+}

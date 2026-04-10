@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "bottom": "justtrialspawners:block/vault_bottom",
+    "side": "justtrialspawners:block/vault_side_on",
+    "front": "justtrialspawners:block/vault_front_on",
+    "top": "justtrialspawners:block/vault_top"
+  }
+}

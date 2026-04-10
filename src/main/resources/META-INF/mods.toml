@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "All Rights Reserved"
+
+[[mods]]
+modId = "justtrialspawners"
+version = "${file.jarVersion}"
+displayName = "Just Trial Spawners"
+description = '''
+Backports Trial Spawners, Breeze, Bogged, and Wind Charges from Minecraft 1.21 to 1.20.1.
+'''
+
+[[dependencies.justtrialspawners]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.justtrialspawners]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,1.21)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.justtrialspawners]]
+modId = "ftblibrary"
+mandatory = true
+versionRange = "[2001.2,)"
+ordering = "AFTER"
+side = "BOTH"

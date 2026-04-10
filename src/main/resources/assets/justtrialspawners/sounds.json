@@ -1,0 +1,241 @@
+{
+  "trial_spawner.spawn_mob": {
+    "subtitle": "subtitles.justtrialspawners.trial_spawner.spawn_mob",
+    "sounds": [
+      "justtrialspawners:block/trial_spawner/spawn1",
+      "justtrialspawners:block/trial_spawner/spawn2",
+      "justtrialspawners:block/trial_spawner/spawn3",
+      "justtrialspawners:block/trial_spawner/spawn4"
+    ]
+  },
+  "trial_spawner.detect_player": {
+    "subtitle": "subtitles.justtrialspawners.trial_spawner.detect_player",
+    "sounds": [
+      "justtrialspawners:block/trial_spawner/detect_player1",
+      "justtrialspawners:block/trial_spawner/detect_player2",
+      "justtrialspawners:block/trial_spawner/detect_player3"
+    ]
+  },
+  "trial_spawner.open_shutter": {
+    "subtitle": "subtitles.justtrialspawners.trial_spawner.open_shutter",
+    "sounds": [
+      "justtrialspawners:block/trial_spawner/open_shutter"
+    ]
+  },
+  "trial_spawner.close_shutter": {
+    "subtitle": "subtitles.justtrialspawners.trial_spawner.close_shutter",
+    "sounds": [
+      "justtrialspawners:block/trial_spawner/close_shutter"
+    ]
+  },
+  "trial_spawner.eject_item": {
+    "subtitle": "subtitles.justtrialspawners.trial_spawner.eject_item",
+    "sounds": [
+      "justtrialspawners:block/trial_spawner/eject_item1"
+    ]
+  },
+  "trial_spawner.ambient": {
+    "subtitle": "subtitles.justtrialspawners.trial_spawner.ambient",
+    "sounds": [
+      "justtrialspawners:block/trial_spawner/ambient1",
+      "justtrialspawners:block/trial_spawner/ambient2",
+      "justtrialspawners:block/trial_spawner/ambient3",
+      "justtrialspawners:block/trial_spawner/ambient4",
+      "justtrialspawners:block/trial_spawner/ambient5"
+    ]
+  },
+  "trial_spawner.ambient_ominous": {
+    "subtitle": "subtitles.justtrialspawners.trial_spawner.ambient_ominous",
+    "sounds": [
+      "justtrialspawners:block/trial_spawner/ambient_ominous1",
+      "justtrialspawners:block/trial_spawner/ambient_ominous2",
+      "justtrialspawners:block/trial_spawner/ambient_ominous3",
+      "justtrialspawners:block/trial_spawner/ambient_ominous4",
+      "justtrialspawners:block/trial_spawner/ambient_ominous5"
+    ]
+  },
+  "breeze.idle_ground": {
+    "subtitle": "subtitles.justtrialspawners.breeze.idle_ground",
+    "sounds": [
+      "justtrialspawners:mob/breeze/idle1",
+      "justtrialspawners:mob/breeze/idle2",
+      "justtrialspawners:mob/breeze/idle3",
+      "justtrialspawners:mob/breeze/idle4"
+    ]
+  },
+  "breeze.idle_air": {
+    "subtitle": "subtitles.justtrialspawners.breeze.idle_air",
+    "sounds": [
+      "justtrialspawners:mob/breeze/idle_air1",
+      "justtrialspawners:mob/breeze/idle_air2",
+      "justtrialspawners:mob/breeze/idle_air3",
+      "justtrialspawners:mob/breeze/idle_air4"
+    ]
+  },
+  "breeze.charge": {
+    "subtitle": "subtitles.justtrialspawners.breeze.charge",
+    "sounds": [
+      "justtrialspawners:mob/breeze/charge1",
+      "justtrialspawners:mob/breeze/charge2",
+      "justtrialspawners:mob/breeze/charge3"
+    ]
+  },
+  "breeze.shoot": {
+    "subtitle": "subtitles.justtrialspawners.breeze.shoot",
+    "sounds": [
+      "justtrialspawners:mob/breeze/shoot"
+    ]
+  },
+  "breeze.inhale": {
+    "subtitle": "subtitles.justtrialspawners.breeze.inhale",
+    "sounds": [
+      "justtrialspawners:mob/breeze/inhale1",
+      "justtrialspawners:mob/breeze/inhale2"
+    ]
+  },
+  "breeze.jump": {
+    "subtitle": "subtitles.justtrialspawners.breeze.jump",
+    "sounds": [
+      "justtrialspawners:mob/breeze/jump1",
+      "justtrialspawners:mob/breeze/jump2"
+    ]
+  },
+  "breeze.land": {
+    "subtitle": "subtitles.justtrialspawners.breeze.land",
+    "sounds": [
+      "justtrialspawners:mob/breeze/land1",
+      "justtrialspawners:mob/breeze/land2"
+    ]
+  },
+  "breeze.slide": {
+    "subtitle": "subtitles.justtrialspawners.breeze.slide",
+    "sounds": [
+      "justtrialspawners:mob/breeze/slide1",
+      "justtrialspawners:mob/breeze/slide2",
+      "justtrialspawners:mob/breeze/slide3",
+      "justtrialspawners:mob/breeze/slide4"
+    ]
+  },
+  "breeze.death": {
+    "subtitle": "subtitles.justtrialspawners.breeze.death",
+    "sounds": [
+      "justtrialspawners:mob/breeze/death1",
+      "justtrialspawners:mob/breeze/death2"
+    ]
+  },
+  "breeze.hurt": {
+    "subtitle": "subtitles.justtrialspawners.breeze.hurt",
+    "sounds": [
+      "justtrialspawners:mob/breeze/hurt1",
+      "justtrialspawners:mob/breeze/hurt2",
+      "justtrialspawners:mob/breeze/hurt3"
+    ]
+  },
+  "breeze.whirl": {
+    "subtitle": "subtitles.justtrialspawners.breeze.whirl",
+    "sounds": [
+      "justtrialspawners:mob/breeze/whirl"
+    ]
+  },
+  "breeze.deflect": {
+    "subtitle": "subtitles.justtrialspawners.breeze.deflect",
+    "sounds": [
+      "justtrialspawners:mob/breeze/deflect1",
+      "justtrialspawners:mob/breeze/deflect2",
+      "justtrialspawners:mob/breeze/deflect3"
+    ]
+  },
+  "bogged.ambient": {
+    "subtitle": "subtitles.justtrialspawners.bogged.ambient",
+    "sounds": [
+      "justtrialspawners:mob/bogged/ambient1",
+      "justtrialspawners:mob/bogged/ambient2",
+      "justtrialspawners:mob/bogged/ambient3",
+      "justtrialspawners:mob/bogged/ambient4"
+    ]
+  },
+  "bogged.death": {
+    "subtitle": "subtitles.justtrialspawners.bogged.death",
+    "sounds": [
+      "justtrialspawners:mob/bogged/death"
+    ]
+  },
+  "bogged.hurt": {
+    "subtitle": "subtitles.justtrialspawners.bogged.hurt",
+    "sounds": [
+      "justtrialspawners:mob/bogged/hurt1",
+      "justtrialspawners:mob/bogged/hurt2",
+      "justtrialspawners:mob/bogged/hurt3",
+      "justtrialspawners:mob/bogged/hurt4"
+    ]
+  },
+  "bogged.step": {
+    "subtitle": "subtitles.justtrialspawners.bogged.step",
+    "sounds": [
+      "justtrialspawners:mob/bogged/step1",
+      "justtrialspawners:mob/bogged/step2",
+      "justtrialspawners:mob/bogged/step3",
+      "justtrialspawners:mob/bogged/step4"
+    ]
+  },
+  "bogged.shear": {
+    "subtitle": "subtitles.justtrialspawners.bogged.shear",
+    "sounds": [
+      { "name": "minecraft:entity/sheep/shear", "type": "event" }
+    ]
+  },
+  "wind_charge.throw": {
+    "subtitle": "subtitles.justtrialspawners.wind_charge.throw",
+    "sounds": [
+      { "name": "minecraft:entity/snowball/throw", "type": "event" }
+    ]
+  },
+  "wind_charge.burst": {
+    "subtitle": "subtitles.justtrialspawners.wind_charge.burst",
+    "sounds": [
+      "justtrialspawners:entity/wind_charge/wind_burst1",
+      "justtrialspawners:entity/wind_charge/wind_burst2",
+      "justtrialspawners:entity/wind_charge/wind_burst3"
+    ]
+  },
+  "breeze_wind_charge.burst": {
+    "subtitle": "subtitles.justtrialspawners.breeze_wind_charge.burst",
+    "sounds": [
+      "justtrialspawners:mob/breeze/wind_burst1",
+      "justtrialspawners:mob/breeze/wind_burst2",
+      "justtrialspawners:mob/breeze/wind_burst3"
+    ]
+  },
+  "vault.activate": {
+    "sounds": [ "justtrialspawners:block/vault/activate" ]
+  },
+  "vault.deactivate": {
+    "sounds": [ "justtrialspawners:block/vault/deactivate" ]
+  },
+  "vault.ambient": {
+    "sounds": [
+      "justtrialspawners:block/vault/ambient1",
+      "justtrialspawners:block/vault/ambient2",
+      "justtrialspawners:block/vault/ambient3"
+    ]
+  },
+  "vault.open_shutter": {
+    "sounds": [ "justtrialspawners:block/vault/open_shutter" ]
+  },
+  "vault.insert": {
+    "sounds": [ "justtrialspawners:block/vault/insert" ]
+  },
+  "vault.insert_fail": {
+    "sounds": [ "justtrialspawners:block/vault/insert_fail" ]
+  },
+  "vault.reject_rewarded_player": {
+    "sounds": [ "justtrialspawners:block/vault/reject_rewarded_player" ]
+  },
+  "vault.eject": {
+    "sounds": [
+      "justtrialspawners:block/vault/eject1",
+      "justtrialspawners:block/vault/eject2",
+      "justtrialspawners:block/vault/eject3"
+    ]
+  }
+}
