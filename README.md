@@ -82,7 +82,7 @@ Just Trial Spawners is designed as a drop-in replacement for the Trials mod by S
 - Trials mod potions, banner patterns, paintings, sherds, and music discs are not remapped and will be lost.
 - The `trials:mace` item has no Just Trial Spawners equivalent.
 
-Disable migration via the server config `enable_trials_migration = false` once migration is complete.
+Migration is **disabled by default**. Enable it via the server config `enable_trials_migration = true` when transitioning a world from the Trials mod to Just Trial Spawners. Disable again once migration is complete.
 
 ## Building from Source
 
