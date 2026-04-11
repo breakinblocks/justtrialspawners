@@ -1,10 +1,28 @@
+buildscript {
+    repositories {
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    }
+    dependencies {
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+
 plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'java'
+    id 'maven-publish'
+    id 'me.modmuss50.mod-publish-plugin' version '0.5.1'
 }
 
-version = "${jar_version}-${mod_version}"
+apply plugin: 'org.spongepowered.mixin'
+
+mixin {
+    add sourceSets.main, 'justtrialspawners.refmap.json'
+    config 'justtrialspawners.mixins.json'
+}
+
+version = "${minecraft_version}-${mod_version}"
 group = mod_group
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -38,6 +56,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     mavenCentral()
     maven {
+        url "https://repo.spongepowered.org/repository/maven-public/"
+        content { includeGroup "org.spongepowered" }
+    }
+    maven {
         url "https://maven.saps.dev/minecraft"
         content { includeGroup "dev.ftb.mods" }
     }
@@ -60,6 +82,9 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
+    // Mixin annotation processor for refmap generation
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     // FTB Library + Architectury - required dependencies (via CurseForge maven for fg.deobf compatibility)
     implementation fg.deobf("curse.maven:ftb-library-forge-404465:7296748")
     implementation fg.deobf("curse.maven:architectury-api-419699:5137938")
@@ -79,5 +104,48 @@ jar {
             'Implementation-Title' : mod_id,
             'Implementation-Version': mod_version,
         ])
+    }
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            name = "BreakInBlocks"
+            url = version.toString().endsWith("-SNAPSHOT") ?
+                "https://maven.breakinblocks.com/snapshots" :
+                "https://maven.breakinblocks.com/releases"
+            credentials {
+                username = System.getenv("MAVEN_USER") ?: ""
+                password = System.getenv("MAVEN_TOKEN") ?: ""
+            }
+        }
+    }
+}
+
+publishMods {
+    file = jar.archiveFile
+    def changelogFile = file("metadata/changelogs/${version}.md")
+    changelog = changelogFile.exists() ? changelogFile.text : "Release ${version}"
+    type = STABLE
+    modLoaders.add("forge")
+
+    curseforge {
+        projectId = providers.environmentVariable("CURSEFORGE_PROJECT_ID").getOrElse("0")
+        projectSlug = "bettertrialspawners"
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        minecraftVersions.add(minecraft_version)
+        requires("ftb-library-forge", "architectury-api")
+    }
+}
+
+tasks.named('publishMods') {
+    def mavenUser = providers.environmentVariable("MAVEN_USER")
+    if (mavenUser.isPresent()) {
+        dependsOn 'publishMavenJavaPublicationToBreakInBlocksRepository'
     }
 }

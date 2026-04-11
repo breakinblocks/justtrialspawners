@@ -5,10 +5,12 @@ A Forge 1.20.1 backport of Minecraft 1.21's Trial Chamber features: trial spawne
 ## Features
 
 ### Blocks
+
 - **Trial Spawner** — Full state machine matching 1.21 behavior. Detects players, spawns mobs in waves, ejects rewards on completion, and transforms into ominous mode when a player with Bad Omen approaches.
 - **Vault** — Key-activated reward block. Insert a Trial Key to claim loot; each player gets one reward per vault.
 
 ### Items
+
 - **Trial Key** / **Ominous Trial Key** — Unlock vaults
 - **Breeze Rod** — Dropped by Breeze mobs, crafts into wind charges
 - **Wind Charge** — Throwable projectile that creates a wind burst explosion
@@ -16,11 +18,13 @@ A Forge 1.20.1 backport of Minecraft 1.21's Trial Chamber features: trial spawne
 - **Breeze / Bogged Spawn Eggs**
 
 ### Entities
+
 - **Breeze** — Aerial mob that fires wind charges
 - **Bogged** — Skeleton variant that shoots poison arrows; can be sheared for mushrooms
 - **Wind Charge** — Projectile entity with authentic 1.21 knockback physics
 
 ### Mob Effects
+
 - **Trial Omen** — Converted from Bad Omen near trial spawners; activates ominous mode
 - **Wind Charged** — Creates a wind burst on death
 - **Weaving** — Spawns cobwebs on death
@@ -28,18 +32,22 @@ A Forge 1.20.1 backport of Minecraft 1.21's Trial Chamber features: trial spawne
 - **Infested** — Chance to spawn silverfish when hit
 
 ### Enchantments (mace / weapon)
+
 - **Density** — +1 damage per level (max V)
 - **Breach** — Bypasses armor effectiveness (max IV)
 - **Wind Burst** — Triggers a wind explosion on hit (max III, treasure-only)
 
 ### Ominous Mode
+
 When a player with Bad Omen enters a trial spawner's detection range, their Bad Omen is converted into Trial Omen and the spawner becomes ominous. Ominous spawners:
+
 - Spawn tougher mob variants
 - Drop items periodically during the fight (configurable via loot table)
 - Eject ominous rewards (ominous trial keys, ominous consumables)
 - Unlock ominous vaults for upgraded loot
 
 ### Commands
+
 ```
 /trialspawner edit                         - Edit held trial spawner item (NBT editor)
 /trialspawner edit <pos>                   - Edit placed trial spawner (NBT editor)
@@ -79,7 +87,7 @@ Disable migration via the server config `enable_trials_migration = false` once m
 ## Building from Source
 
 ```bash
-./gradlew build          # Build the mod jar (output: build/libs/justtrialspawners-26.1.1-1.0.0.jar)
+./gradlew build          # Build the mod jar (output: build/libs/justtrialspawners-1.20.1-1.0.0.jar)
 ./gradlew runClient      # Launch a dev client
 ./gradlew runServer      # Launch a dev server
 ./gradlew runData        # Run data generation

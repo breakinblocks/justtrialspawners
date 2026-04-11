@@ -50,8 +50,8 @@ public class JTSConfig {
             builder.push("migration");
 
             enableTrialsMigration = builder
-                    .comment("Enable automatic migration from the Trials mod (trials:trial_spawner -> justtrialspawners:trial_spawner)")
-                    .define("enable_trials_migration", true);
+                    .comment("Enable automatic migration from the Trials mod (trials:trial_spawner -> justtrialspawners:trial_spawner). Disabled by default - enable when transitioning a world from the Trials mod to Just Trial Spawners.")
+                    .define("enable_trials_migration", false);
 
             builder.pop();
         }

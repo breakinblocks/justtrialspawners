@@ -44,14 +44,12 @@ public class VaultBlockEntity extends BlockEntity {
 
     public VaultBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.VAULT.get(), pos, state);
-        this.config = state.getValue(VaultBlock.OMINOUS)
-                ? VaultConfig.createOminous() : new VaultConfig();
+        boolean ominous = state.hasProperty(VaultBlock.OMINOUS) && state.getValue(VaultBlock.OMINOUS);
+        this.config = ominous ? VaultConfig.createOminous() : new VaultConfig();
     }
 
     public VaultConfig getConfig() { return config; }
     public VaultSharedData getSharedData() { return sharedData; }
-
-    // ========== Ticking ==========
 
     public void serverTick(ServerLevel level, BlockPos pos, BlockState state) {
         // Fix ominous state from Trials mod migration
@@ -147,8 +145,6 @@ public class VaultBlockEntity extends BlockEntity {
         }
     }
 
-    // ========== Key Insertion ==========
-
     public void tryInsertKey(ServerLevel level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
         ItemStack heldItem = player.getItemInHand(hand);
         if (heldItem.isEmpty()) return;
@@ -209,8 +205,6 @@ public class VaultBlockEntity extends BlockEntity {
         }
     }
 
-    // ========== State Management ==========
-
     private void setState(ServerLevel level, BlockPos pos, BlockState state, VaultState newState) {
         level.setBlockAndUpdate(pos, state.setValue(VaultBlock.STATE, newState));
         this.setChanged();
@@ -222,8 +216,6 @@ public class VaultBlockEntity extends BlockEntity {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
         }
     }
-
-    // ========== NBT ==========
 
     @Override
     public void load(CompoundTag tag) {

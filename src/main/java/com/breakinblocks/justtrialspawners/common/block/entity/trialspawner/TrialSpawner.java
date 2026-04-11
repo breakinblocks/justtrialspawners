@@ -104,8 +104,6 @@ public final class TrialSpawner {
                 && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING);
     }
 
-    // ========== State Machine Tick ==========
-
     public void tickServer(ServerLevel level, BlockPos pos, boolean ominous) {
         this.isOminous = ominous;
         TrialSpawnerState currentState = this.getState();
@@ -230,8 +228,6 @@ public final class TrialSpawner {
         };
     }
 
-    // ========== Mob Spawning ==========
-
     public Optional<UUID> spawnMob(ServerLevel level, BlockPos pos) {
         RandomSource random = level.getRandom();
         SpawnData spawnData = this.data.getOrCreateNextSpawnData(this, random);
@@ -297,8 +293,6 @@ public final class TrialSpawner {
             level.levelEvent(3014, pos, 0);
         }
     }
-
-    // ========== Ominous Item Spawning ==========
 
     private void spawnOminousItem(ServerLevel level, BlockPos pos) {
         SimpleWeightedRandomList<ItemStack> dispensingItems = this.data.getDispensingItems(level, this.getConfig(), pos);
@@ -367,8 +361,6 @@ public final class TrialSpawner {
         return candidates.get(level.random.nextInt(candidates.size()));
     }
 
-    // ========== Client Tick ==========
-
     public void tickClient(Level level, BlockPos pos, boolean ominous) {
         TrialSpawnerState state = this.getState();
         state.emitParticles(level, pos, ominous);
@@ -388,8 +380,6 @@ public final class TrialSpawner {
             }
         }
     }
-
-    // ========== Utility ==========
 
     private static boolean shouldMobBeUntracked(ServerLevel level, BlockPos pos, UUID uuid) {
         Entity entity = level.getEntity(uuid);
@@ -414,8 +404,6 @@ public final class TrialSpawner {
             level.addParticle(type, x, y, z, 0, 0, 0);
         }
     }
-
-    // ========== NBT ==========
 
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();

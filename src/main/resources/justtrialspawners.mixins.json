@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.breakinblocks.justtrialspawners.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "justtrialspawners.refmap.json",
+  "mixins": [
+    "ChunkSerializerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

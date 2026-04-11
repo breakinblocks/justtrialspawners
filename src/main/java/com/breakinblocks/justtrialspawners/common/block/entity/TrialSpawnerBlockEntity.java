@@ -32,10 +32,8 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements TrialSpawner
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        // Migrate old Trials mod NBT format
         if (JTSConfig.SERVER.enableTrialsMigration.get() && TrialsNbtConverter.isTrialsSpawnerFormat(tag)) {
             TrialsNbtConverter.convertTrialSpawner(tag);
-            // Mark dirty so the converted data persists to disk
             this.setChanged();
         }
         if (tag.contains("trial_spawner")) {
@@ -64,8 +62,6 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements TrialSpawner
         saveAdditional(tag);
         return tag;
     }
-
-    // ========== StateAccessor Implementation ==========
 
     @Override
     public TrialSpawnerState getState() {

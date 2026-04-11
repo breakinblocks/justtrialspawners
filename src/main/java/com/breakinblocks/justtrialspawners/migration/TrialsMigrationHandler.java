@@ -7,6 +7,9 @@ import com.breakinblocks.justtrialspawners.registry.ModEnchantments;
 import com.breakinblocks.justtrialspawners.registry.ModEntities;
 import com.breakinblocks.justtrialspawners.registry.ModItems;
 import com.breakinblocks.justtrialspawners.registry.ModMobEffects;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
@@ -18,14 +21,54 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.MissingMappingsEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Handles registry remapping from the Trials mod (modid: "trials") to Just Trial Spawners.
- * When a world previously used the Trials mod, Forge fires MissingMappingsEvent for all
- * registry entries it can't find. We remap the relevant ones to our registry entries.
+ * MissingMappingsEvent fires on the Forge event bus (NOT the mod bus), so this handler
+ * is registered manually in the main mod class.
  */
 public class TrialsMigrationHandler {
 
     private static final String TRIALS_NAMESPACE = "trials";
+
+    /**
+     * Mapping of old Trials mod block entity type IDs to our block entity type IDs.
+     * Used by the ChunkDataEvent.Load handler to rewrite block entity NBT before vanilla
+     * tries to look them up in the registry.
+     */
+    private static final Map<String, String> BLOCK_ENTITY_ID_REMAPS = new HashMap<>();
+    static {
+        BLOCK_ENTITY_ID_REMAPS.put("trials:trials_spawner", "justtrialspawners:trial_spawner");
+        BLOCK_ENTITY_ID_REMAPS.put("trials:trials_vault", "justtrialspawners:vault");
+    }
+
+    /**
+     * Mapping of old Trials mod block IDs (in chunk palette Name fields) to our block IDs.
+     * Used by the ChunkDataEvent.Load handler to rewrite block palette entries before vanilla
+     * tries to look them up in the registry.
+     */
+    private static final Map<String, String> BLOCK_PALETTE_REMAPS = new HashMap<>();
+    static {
+        BLOCK_PALETTE_REMAPS.put("trials:trial_spawner", "justtrialspawners:trial_spawner");
+        BLOCK_PALETTE_REMAPS.put("trials:trial_vault", "justtrialspawners:vault");
+        BLOCK_PALETTE_REMAPS.put("trials:trial_vault_ominous", "justtrialspawners:vault");
+    }
+
+    /**
+     * Mapping of old Trials mod spawn egg item IDs to our spawn egg item IDs.
+     * Used when extracting entity type from SpawnEgg NBT in trial spawner conversion.
+     */
+    private static final Map<String, String> SPAWN_EGG_ITEM_REMAPS = new HashMap<>();
+    static {
+        SPAWN_EGG_ITEM_REMAPS.put("trials:bogged_spawn_egg", "justtrialspawners:bogged_spawn_egg");
+        SPAWN_EGG_ITEM_REMAPS.put("trials:breeze_spawn_egg", "justtrialspawners:breeze_spawn_egg");
+    }
+
+    public static Map<String, String> getSpawnEggItemRemaps() {
+        return SPAWN_EGG_ITEM_REMAPS;
+    }
 
     @SubscribeEvent
     public static void onMissingBlockMappings(MissingMappingsEvent event) {
@@ -157,6 +200,57 @@ public class TrialsMigrationHandler {
                 case "wind_burst" -> {
                     mapping.remap(ModEnchantments.WIND_BURST.get());
                     JustTrialSpawners.LOGGER.info("Remapped trials:wind_burst -> justtrialspawners:wind_burst");
+                }
+            }
+        }
+    }
+
+    /**
+     * Rewrites block palette entries and block entity NBT IDs in raw chunk NBT.
+     * Called from ChunkSerializerMixin BEFORE vanilla deserializes the chunk.
+     * Vanilla looks up blocks and block entity types by string, and MissingMappingsEvent
+     * remapping doesn't expose the old key as an alias, so we rewrite the raw chunk NBT
+     * before the palette is processed.
+     */
+    public static void rewriteChunkNbt(CompoundTag chunkTag) {
+        if (chunkTag == null) return;
+
+        // Rewrite block palette Names in each section
+        Tag sectionsTag = chunkTag.get("sections");
+        if (sectionsTag instanceof ListTag sections) {
+            for (int i = 0; i < sections.size(); i++) {
+                CompoundTag section = sections.getCompound(i);
+                if (!section.contains("block_states")) continue;
+                CompoundTag blockStates = section.getCompound("block_states");
+                if (!blockStates.contains("palette")) continue;
+                ListTag palette = blockStates.getList("palette", Tag.TAG_COMPOUND);
+                for (int j = 0; j < palette.size(); j++) {
+                    CompoundTag paletteEntry = palette.getCompound(j);
+                    String oldName = paletteEntry.getString("Name");
+                    String newName = BLOCK_PALETTE_REMAPS.get(oldName);
+                    if (newName != null) {
+                        paletteEntry.putString("Name", newName);
+                        boolean wasOminousVault = "trials:trial_vault_ominous".equals(oldName);
+                        paletteEntry.remove("Properties");
+                        if (wasOminousVault) {
+                            CompoundTag props = new CompoundTag();
+                            props.putString("ominous", "true");
+                            paletteEntry.put("Properties", props);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Rewrite block entity IDs
+        Tag blockEntitiesTag = chunkTag.get("block_entities");
+        if (blockEntitiesTag instanceof ListTag blockEntities) {
+            for (int i = 0; i < blockEntities.size(); i++) {
+                CompoundTag be = blockEntities.getCompound(i);
+                String oldId = be.getString("id");
+                String newId = BLOCK_ENTITY_ID_REMAPS.get(oldId);
+                if (newId != null) {
+                    be.putString("id", newId);
                 }
             }
         }

@@ -23,7 +23,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class JTSClient {
 
     public static void init(IEventBus modEventBus) {
-        // Additional client-side registration can go here
     }
 
     @SubscribeEvent

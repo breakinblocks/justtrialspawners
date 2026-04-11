@@ -55,11 +55,11 @@ public final class TrialsNbtConverter {
     public static void convertTrialSpawner(CompoundTag tag) {
         String entityId = extractEntityIdFromSpawnEgg(tag);
         if (entityId == null) {
-            entityId = "minecraft:zombie"; // Fallback
+            entityId = "minecraft:zombie";
         }
 
-        int enemies = tag.contains("Enemies") ? tag.getInt("Enemies") : 1;
-        int killed = tag.contains("Killed") ? tag.getInt("Killed") : 0;
+        // Trials mod's "Enemies" field is remaining-to-spawn count (0 when idle),
+        // not a configured total. Use vanilla 1.21 defaults for migrated spawners.
 
         // Build spawn_potentials
         ListTag potentials = new ListTag();
@@ -72,10 +72,10 @@ public final class TrialsNbtConverter {
         entry.put("data", dataTag);
         potentials.add(entry);
 
-        // Build normal_config
+        // Build normal_config (Just Trial Spawners defaults)
         CompoundTag configTag = new CompoundTag();
         configTag.putInt("spawn_range", 4);
-        configTag.putFloat("total_mobs", Math.max(1.0f, enemies));
+        configTag.putFloat("total_mobs", 1.0f);
         configTag.putFloat("simultaneous_mobs", 1.0f);
         configTag.putFloat("total_mobs_added_per_player", 1.0f);
         configTag.putFloat("simultaneous_mobs_added_per_player", 1.0f);
@@ -94,9 +94,9 @@ public final class TrialsNbtConverter {
         ominousLoot.add(StringTag.valueOf("justtrialspawners:spawners/ominous/trial_chamber/key"));
         ominousConfig.put("loot_tables_to_eject", ominousLoot);
 
-        // Build data
+        // Build data (reset on migration - spawner will restart cleanly)
         CompoundTag spawnerData = new CompoundTag();
-        spawnerData.putInt("total_mobs_spawned", killed);
+        spawnerData.putInt("total_mobs_spawned", 0);
         spawnerData.putLong("cooldown_ends_at", 0L);
         spawnerData.putLong("next_mob_spawns_at", 0L);
 
@@ -120,7 +120,7 @@ public final class TrialsNbtConverter {
         tag.remove("Killed");
         tag.put("trial_spawner", spawnerTag);
 
-        JustTrialSpawners.LOGGER.info("Converted Trials mod spawner NBT (entity: {}, enemies: {})", entityId, enemies);
+        JustTrialSpawners.LOGGER.info("Converted Trials mod spawner NBT (entity: {})", entityId);
     }
 
     /**
@@ -165,7 +165,31 @@ public final class TrialsNbtConverter {
         if (!tag.contains("SpawnEgg")) return null;
 
         try {
-            CompoundTag eggTag = tag.getCompound("SpawnEgg");
+            CompoundTag eggTag = tag.getCompound("SpawnEgg").copy();
+
+            // First try fast path: parse the ItemStack id directly as spawn egg naming convention.
+            // Most vanilla spawn eggs follow "<namespace>:<entity>_spawn_egg" → entity is "<namespace>:<entity>".
+            // This avoids ItemStack.of() returning EMPTY for items whose registry entry was remapped by string.
+            String eggItemId = eggTag.getString("id");
+            if (!eggItemId.isEmpty()) {
+                // Remap Trials mod spawn eggs to our equivalents for downstream ItemStack resolution
+                String remapped = TrialsMigrationHandler.getSpawnEggItemRemaps().get(eggItemId);
+                if (remapped != null) {
+                    eggItemId = remapped;
+                    eggTag.putString("id", remapped);
+                }
+
+                // Derive entity type from spawn egg item ID pattern
+                if (eggItemId.endsWith("_spawn_egg")) {
+                    ResourceLocation itemRl = ResourceLocation.tryParse(eggItemId);
+                    if (itemRl != null) {
+                        String entityPath = itemRl.getPath().substring(0, itemRl.getPath().length() - "_spawn_egg".length());
+                        return itemRl.getNamespace() + ":" + entityPath;
+                    }
+                }
+            }
+
+            // Fallback: try ItemStack.of() in case the above pattern doesn't match
             ItemStack eggStack = ItemStack.of(eggTag);
             if (eggStack.isEmpty()) return null;
 
