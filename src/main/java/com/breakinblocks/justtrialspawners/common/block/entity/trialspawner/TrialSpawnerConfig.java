@@ -28,9 +28,9 @@ public class TrialSpawnerConfig {
     public static final String TAG_ITEMS_TO_DROP_WHEN_OMINOUS = "items_to_drop_when_ominous";
 
     private int spawnRange = 4;
-    private float totalMobs = 1.0f;
-    private float simultaneousMobs = 1.0f;
-    private float totalMobsAddedPerPlayer = 1.0f;
+    private float totalMobs = 6.0f;
+    private float simultaneousMobs = 2.0f;
+    private float totalMobsAddedPerPlayer = 2.0f;
     private float simultaneousMobsAddedPerPlayer = 1.0f;
     private int ticksBetweenSpawn = 40;
     private SimpleWeightedRandomList<SpawnData> spawnPotentials = SimpleWeightedRandomList.empty();
@@ -56,6 +56,8 @@ public class TrialSpawnerConfig {
      */
     public static TrialSpawnerConfig createOminousDefault() {
         TrialSpawnerConfig config = new TrialSpawnerConfig();
+        config.totalMobs = 12.0f;
+        config.simultaneousMobs = 4.0f;
         config.lootTablesToEject.clear();
         config.lootTablesToEject.add(new ResourceLocation("justtrialspawners", "spawners/ominous/trial_chamber/consumables"));
         config.lootTablesToEject.add(new ResourceLocation("justtrialspawners", "spawners/ominous/trial_chamber/key"));
