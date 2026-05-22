@@ -1,6 +1,7 @@
 package com.breakinblocks.justtrialspawners;
 
 import com.breakinblocks.justtrialspawners.client.JTSClient;
+import com.breakinblocks.justtrialspawners.common.entity.WindChargeProjectile;
 import com.breakinblocks.justtrialspawners.config.JTSConfig;
 import com.breakinblocks.justtrialspawners.common.command.TrialSpawnerCommand;
 import com.breakinblocks.justtrialspawners.events.JTSEventHandler;
@@ -14,6 +15,12 @@ import com.breakinblocks.justtrialspawners.registry.ModItems;
 import com.breakinblocks.justtrialspawners.registry.ModEnchantments;
 import com.breakinblocks.justtrialspawners.registry.ModMobEffects;
 import com.breakinblocks.justtrialspawners.registry.ModSounds;
+import net.minecraft.core.Position;
+import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -61,6 +68,30 @@ public class JustTrialSpawners {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(JTSNetworking::register);
+        event.enqueueWork(() -> {
+            JTSNetworking.register();
+            registerDispenseBehaviors();
+        });
+    }
+
+    private static void registerDispenseBehaviors() {
+        DispenserBlock.registerBehavior(ModItems.WIND_CHARGE.get(), new AbstractProjectileDispenseBehavior() {
+            @Override
+            protected Projectile getProjectile(Level level, Position position, ItemStack stack) {
+                WindChargeProjectile projectile = new WindChargeProjectile(ModEntities.WIND_CHARGE.get(), level);
+                projectile.setPos(position.x(), position.y(), position.z());
+                return projectile;
+            }
+
+            @Override
+            protected float getUncertainty() {
+                return 1.0F;
+            }
+
+            @Override
+            protected float getPower() {
+                return 1.0F;
+            }
+        });
     }
 }
