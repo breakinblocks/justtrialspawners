@@ -1,5 +1,6 @@
 package com.breakinblocks.justtrialspawners.common.block.entity.trialspawner;
 
+import com.breakinblocks.justtrialspawners.config.JTSConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -27,7 +28,6 @@ public class TrialSpawnerConfig {
     public static final String TAG_LOOT_TABLES_TO_EJECT = "loot_tables_to_eject";
     public static final String TAG_ITEMS_TO_DROP_WHEN_OMINOUS = "items_to_drop_when_ominous";
 
-    private int spawnRange = 4;
     private float totalMobs = 6.0f;
     private float simultaneousMobs = 2.0f;
     private float totalMobsAddedPerPlayer = 2.0f;
@@ -64,7 +64,7 @@ public class TrialSpawnerConfig {
         return config;
     }
 
-    public int spawnRange() { return spawnRange; }
+    public int spawnRange() { return JTSConfig.spawnRange(); }
     public float totalMobs() { return totalMobs; }
     public float simultaneousMobs() { return simultaneousMobs; }
     public float totalMobsAddedPerPlayer() { return totalMobsAddedPerPlayer; }
@@ -85,7 +85,7 @@ public class TrialSpawnerConfig {
 
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
-        tag.putInt(TAG_SPAWN_RANGE, spawnRange);
+        tag.putInt(TAG_SPAWN_RANGE, spawnRange());
         tag.putFloat(TAG_TOTAL_MOBS, totalMobs);
         tag.putFloat(TAG_SIMULTANEOUS_MOBS, simultaneousMobs);
         tag.putFloat(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, totalMobsAddedPerPlayer);
@@ -125,7 +125,6 @@ public class TrialSpawnerConfig {
 
     public static TrialSpawnerConfig load(CompoundTag tag) {
         TrialSpawnerConfig config = new TrialSpawnerConfig();
-        if (tag.contains(TAG_SPAWN_RANGE)) config.spawnRange = tag.getInt(TAG_SPAWN_RANGE);
         if (tag.contains(TAG_TOTAL_MOBS)) config.totalMobs = tag.getFloat(TAG_TOTAL_MOBS);
         if (tag.contains(TAG_SIMULTANEOUS_MOBS)) config.simultaneousMobs = tag.getFloat(TAG_SIMULTANEOUS_MOBS);
         if (tag.contains(TAG_TOTAL_MOBS_ADDED_PER_PLAYER)) config.totalMobsAddedPerPlayer = tag.getFloat(TAG_TOTAL_MOBS_ADDED_PER_PLAYER);

@@ -96,7 +96,7 @@ public class TrialSpawnerData {
                 level, pos, spawner.getRequiredPlayerRange(), true);
 
         // Check for ominous effect conversion
-        if (!spawner.isOminous() && !detected.isEmpty()) {
+        if (TrialSpawner.isOminousModeEnabled() && !spawner.isOminous() && !detected.isEmpty()) {
             Optional<Player> ominousPlayer = findPlayerWithOminousEffect(level, detected);
             if (ominousPlayer.isPresent()) {
                 Player player = ominousPlayer.get();

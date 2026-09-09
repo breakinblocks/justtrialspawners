@@ -1,5 +1,6 @@
 package com.breakinblocks.justtrialspawners.common.entity;
 
+import com.breakinblocks.justtrialspawners.config.JTSConfig;
 import com.breakinblocks.justtrialspawners.registry.ModEntities;
 import com.breakinblocks.justtrialspawners.registry.ModSounds;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +29,8 @@ public class WindChargeProjectile extends AbstractWindChargeProjectile {
 
     @Override
     protected void explode(Vec3 position) {
-        windBurst(this.level(), position, RADIUS, KNOCKBACK_MULTIPLIER, this);
+        windBurst(this.level(), position, RADIUS,
+                KNOCKBACK_MULTIPLIER * JTSConfig.windChargeKnockbackMultiplier(), this);
         this.level().playSound(null, position.x(), position.y(), position.z(),
                 ModSounds.WIND_CHARGE_BURST.get(), this.getSoundSource(), 1.0F, 1.0F);
     }

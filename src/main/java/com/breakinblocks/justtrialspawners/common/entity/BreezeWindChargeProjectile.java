@@ -1,5 +1,6 @@
 package com.breakinblocks.justtrialspawners.common.entity;
 
+import com.breakinblocks.justtrialspawners.config.JTSConfig;
 import com.breakinblocks.justtrialspawners.registry.ModEntities;
 import com.breakinblocks.justtrialspawners.registry.ModSounds;
 import net.minecraft.world.entity.EntityType;
@@ -24,7 +25,8 @@ public class BreezeWindChargeProjectile extends AbstractWindChargeProjectile {
 
     @Override
     protected void explode(Vec3 position) {
-        WindChargeProjectile.windBurst(this.level(), position, RADIUS, 1.0F, this);
+        WindChargeProjectile.windBurst(this.level(), position, RADIUS,
+                JTSConfig.windChargeKnockbackMultiplier(), this);
         this.level().playSound(null, position.x(), position.y(), position.z(),
                 ModSounds.BREEZE_WIND_CHARGE_BURST.get(), this.getSoundSource(), 1.0F, 1.0F);
 

@@ -221,7 +221,7 @@ public class VaultBlockEntity extends BlockEntity {
     public void load(CompoundTag tag) {
         super.load(tag);
         // Migrate old Trials mod vault NBT format
-        if (JTSConfig.SERVER.enableTrialsMigration.get() && TrialsNbtConverter.isTrialsVaultFormat(tag)) {
+        if (JTSConfig.trialsMigrationEnabled() && TrialsNbtConverter.isTrialsVaultFormat(tag)) {
             this.pendingOminousFixup = TrialsNbtConverter.convertVault(tag);
             this.setChanged();
         }

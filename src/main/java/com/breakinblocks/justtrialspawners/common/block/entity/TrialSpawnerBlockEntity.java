@@ -32,7 +32,7 @@ public class TrialSpawnerBlockEntity extends BlockEntity implements TrialSpawner
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        if (JTSConfig.SERVER.enableTrialsMigration.get() && TrialsNbtConverter.isTrialsSpawnerFormat(tag)) {
+        if (JTSConfig.trialsMigrationEnabled() && TrialsNbtConverter.isTrialsSpawnerFormat(tag)) {
             TrialsNbtConverter.convertTrialSpawner(tag);
             this.setChanged();
         }

@@ -2,6 +2,7 @@ package com.breakinblocks.justtrialspawners.common.block.entity.trialspawner;
 
 import com.breakinblocks.justtrialspawners.JustTrialSpawners;
 import com.breakinblocks.justtrialspawners.common.block.TrialSpawnerBlock;
+import com.breakinblocks.justtrialspawners.config.JTSConfig;
 import com.breakinblocks.justtrialspawners.registry.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,8 +43,6 @@ import java.util.UUID;
  */
 public final class TrialSpawner {
     public static final int DETECT_PLAYER_SPAWN_BUFFER = 40;
-    private static final int DEFAULT_TARGET_COOLDOWN_LENGTH = 36000;
-    private static final int DEFAULT_PLAYER_SCAN_RANGE = 14;
     private static final int MAX_MOB_TRACKING_DISTANCE = 47;
     private static final int MAX_MOB_TRACKING_DISTANCE_SQR = Mth.square(MAX_MOB_TRACKING_DISTANCE);
     private static final float SPAWNING_AMBIENT_SOUND_CHANCE = 0.02F;
@@ -51,24 +50,18 @@ public final class TrialSpawner {
     private TrialSpawnerConfig normalConfig;
     private TrialSpawnerConfig ominousConfig;
     private final TrialSpawnerData data;
-    private final int requiredPlayerRange;
-    private final int targetCooldownLength;
     private final StateAccessor stateAccessor;
     private boolean isOminous;
 
     public TrialSpawner(StateAccessor stateAccessor) {
-        this(new TrialSpawnerConfig(), TrialSpawnerConfig.createOminousDefault(), new TrialSpawnerData(),
-                DEFAULT_TARGET_COOLDOWN_LENGTH, DEFAULT_PLAYER_SCAN_RANGE, stateAccessor);
+        this(new TrialSpawnerConfig(), TrialSpawnerConfig.createOminousDefault(), new TrialSpawnerData(), stateAccessor);
     }
 
     public TrialSpawner(TrialSpawnerConfig normalConfig, TrialSpawnerConfig ominousConfig,
-                         TrialSpawnerData data, int targetCooldownLength, int requiredPlayerRange,
-                         StateAccessor stateAccessor) {
+                         TrialSpawnerData data, StateAccessor stateAccessor) {
         this.normalConfig = normalConfig;
         this.ominousConfig = ominousConfig;
         this.data = data;
-        this.targetCooldownLength = targetCooldownLength;
-        this.requiredPlayerRange = requiredPlayerRange;
         this.stateAccessor = stateAccessor;
     }
 
@@ -76,11 +69,15 @@ public final class TrialSpawner {
         return this.isOminous ? this.ominousConfig : this.normalConfig;
     }
 
+    public static boolean isOminousModeEnabled() {
+        return JTSConfig.ominousEnabled();
+    }
+
     public TrialSpawnerConfig getNormalConfig() { return this.normalConfig; }
     public TrialSpawnerConfig getOminousConfig() { return this.ominousConfig; }
     public TrialSpawnerData getData() { return this.data; }
-    public int getTargetCooldownLength() { return this.targetCooldownLength; }
-    public int getRequiredPlayerRange() { return this.requiredPlayerRange; }
+    public int getTargetCooldownLength() { return JTSConfig.cooldownTicks(); }
+    public int getRequiredPlayerRange() { return JTSConfig.detectionRange(); }
 
     public TrialSpawnerState getState() { return this.stateAccessor.getState(); }
     public void setState(Level level, TrialSpawnerState state) { this.stateAccessor.setState(level, state); }
@@ -89,6 +86,7 @@ public final class TrialSpawner {
     public boolean isOminous() { return this.isOminous; }
 
     public void applyOminous(ServerLevel level, BlockPos pos) {
+        if (!isOminousModeEnabled()) return;
         level.setBlock(pos, level.getBlockState(pos).setValue(TrialSpawnerBlock.OMINOUS, true), 3);
         this.isOminous = true;
         this.data.resetAfterBecomingOminous(this, level);
@@ -105,6 +103,10 @@ public final class TrialSpawner {
     }
 
     public void tickServer(ServerLevel level, BlockPos pos, boolean ominous) {
+        if (ominous && !isOminousModeEnabled()) {
+            this.removeOminous(level, pos);
+            ominous = false;
+        }
         this.isOminous = ominous;
         TrialSpawnerState currentState = this.getState();
 
@@ -160,7 +162,7 @@ public final class TrialSpawner {
 
                 if (this.data.hasFinishedSpawningAllMobs(this.getConfig(), additionalPlayers)) {
                     if (this.data.haveAllCurrentMobsDied()) {
-                        this.data.cooldownEndsAt = level.getGameTime() + this.targetCooldownLength;
+                        this.data.cooldownEndsAt = level.getGameTime() + this.getTargetCooldownLength();
                         this.data.totalMobsSpawned = 0;
                         this.data.nextMobSpawnsAt = 0L;
                         yield TrialSpawnerState.WAITING_FOR_REWARD_EJECTION;
@@ -180,7 +182,7 @@ public final class TrialSpawner {
             }
 
             case WAITING_FOR_REWARD_EJECTION -> {
-                if (this.data.isReadyToOpenShutter(level, TrialSpawnerState.DELAY_BEFORE_EJECT_AFTER_KILLING_LAST_MOB, this.targetCooldownLength)) {
+                if (this.data.isReadyToOpenShutter(level, TrialSpawnerState.DELAY_BEFORE_EJECT_AFTER_KILLING_LAST_MOB, this.getTargetCooldownLength())) {
                     level.playSound(null, pos, ModSounds.TRIAL_SPAWNER_OPEN_SHUTTER.get(), SoundSource.BLOCKS);
                     yield TrialSpawnerState.EJECTING_REWARD;
                 }
@@ -188,7 +190,7 @@ public final class TrialSpawner {
             }
 
             case EJECTING_REWARD -> {
-                if (!this.data.isReadyToEjectItems(level, TrialSpawnerState.TIME_BETWEEN_EACH_EJECTION, this.targetCooldownLength)) {
+                if (!this.data.isReadyToEjectItems(level, TrialSpawnerState.TIME_BETWEEN_EACH_EJECTION, this.getTargetCooldownLength())) {
                     yield TrialSpawnerState.EJECTING_REWARD;
                 }
                 if (this.data.detectedPlayers.isEmpty()) {
@@ -320,7 +322,7 @@ public final class TrialSpawner {
                 .map(level::getPlayerByUUID)
                 .filter(java.util.Objects::nonNull)
                 .filter(p -> !p.isCreative() && !p.isSpectator() && p.isAlive()
-                        && p.distanceToSqr(pos.getCenter()) <= (double) Mth.square(this.requiredPlayerRange))
+                        && p.distanceToSqr(pos.getCenter()) <= (double) Mth.square(this.getRequiredPlayerRange()))
                 .toList();
 
         if (players.isEmpty()) return Optional.empty();
@@ -410,8 +412,8 @@ public final class TrialSpawner {
         tag.put("normal_config", normalConfig.save());
         tag.put("ominous_config", ominousConfig.save());
         tag.put("data", data.save());
-        tag.putInt("target_cooldown_length", targetCooldownLength);
-        tag.putInt("required_player_range", requiredPlayerRange);
+        tag.putInt("target_cooldown_length", getTargetCooldownLength());
+        tag.putInt("required_player_range", getRequiredPlayerRange());
         tag.putBoolean("is_ominous", isOminous);
         return tag;
     }
