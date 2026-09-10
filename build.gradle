@@ -139,6 +139,8 @@ publishMods {
         projectSlug = "bettertrialspawners"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         minecraftVersions.add(minecraft_version)
+        clientRequired = true
+        serverRequired = true
         requires("ftb-library-forge", "architectury-api")
     }
 }
@@ -148,4 +150,9 @@ tasks.named('publishMods') {
     if (mavenUser.isPresent()) {
         dependsOn 'publishMavenJavaPublicationToBreakInBlocksRepository'
     }
+}
+
+tasks.matching { it.name in ['publishMods', 'publishCurseforge', 'publishModrinth', 'publishGithub'] }.configureEach {
+    dependsOn 'reobfJar'
+    mustRunAfter 'reobfJar'
 }
