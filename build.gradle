@@ -156,3 +156,13 @@ tasks.matching { it.name in ['publishMods', 'publishCurseforge', 'publishModrint
     dependsOn 'reobfJar'
     mustRunAfter 'reobfJar'
 }
+
+tasks.withType(PublishToMavenRepository).configureEach {
+    dependsOn 'reobfJar'
+    mustRunAfter 'reobfJar'
+}
+
+tasks.withType(PublishToMavenLocal).configureEach {
+    dependsOn 'reobfJar'
+    mustRunAfter 'reobfJar'
+}
