@@ -38,3 +38,5 @@ reference/
 !README.md
 !LICENSE.md
 !metadata/changelogs/*.md
+
+cf.json
