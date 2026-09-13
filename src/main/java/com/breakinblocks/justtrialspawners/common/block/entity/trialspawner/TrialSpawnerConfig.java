@@ -124,7 +124,11 @@ public class TrialSpawnerConfig {
     }
 
     public static TrialSpawnerConfig load(CompoundTag tag) {
-        TrialSpawnerConfig config = new TrialSpawnerConfig();
+        return load(tag, false);
+    }
+
+    public static TrialSpawnerConfig load(CompoundTag tag, boolean ominous) {
+        TrialSpawnerConfig config = ominous ? createOminousDefault() : new TrialSpawnerConfig();
         if (tag.contains(TAG_TOTAL_MOBS)) config.totalMobs = tag.getFloat(TAG_TOTAL_MOBS);
         if (tag.contains(TAG_SIMULTANEOUS_MOBS)) config.simultaneousMobs = tag.getFloat(TAG_SIMULTANEOUS_MOBS);
         if (tag.contains(TAG_TOTAL_MOBS_ADDED_PER_PLAYER)) config.totalMobsAddedPerPlayer = tag.getFloat(TAG_TOTAL_MOBS_ADDED_PER_PLAYER);

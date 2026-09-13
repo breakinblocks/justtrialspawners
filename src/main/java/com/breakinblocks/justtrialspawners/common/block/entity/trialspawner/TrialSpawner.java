@@ -423,7 +423,7 @@ public final class TrialSpawner {
             this.normalConfig = TrialSpawnerConfig.load(tag.getCompound("normal_config"));
         }
         if (tag.contains("ominous_config")) {
-            this.ominousConfig = TrialSpawnerConfig.load(tag.getCompound("ominous_config"));
+            this.ominousConfig = TrialSpawnerConfig.load(tag.getCompound("ominous_config"), true);
         }
         if (tag.contains("data")) {
             TrialSpawnerData loaded = TrialSpawnerData.load(tag.getCompound("data"));
