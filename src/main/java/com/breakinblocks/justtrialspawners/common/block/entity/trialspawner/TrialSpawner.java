@@ -85,6 +85,17 @@ public final class TrialSpawner {
 
     public boolean isOminous() { return this.isOminous; }
 
+    public void setSpawnData(SpawnData spawnData) {
+        this.normalConfig.setSpawnPotentials(SimpleWeightedRandomList.<SpawnData>builder()
+                .add(spawnData, 1).build());
+        SpawnData ominousSpawnData = new SpawnData(spawnData.getEntityToSpawn().copy(),
+                spawnData.getCustomSpawnRules());
+        this.ominousConfig.setSpawnPotentials(SimpleWeightedRandomList.<SpawnData>builder()
+                .add(ominousSpawnData, 1).build());
+        this.data.setNextSpawnData(spawnData);
+        this.markUpdated();
+    }
+
     public void applyOminous(ServerLevel level, BlockPos pos) {
         if (!isOminousModeEnabled()) return;
         level.setBlock(pos, level.getBlockState(pos).setValue(TrialSpawnerBlock.OMINOUS, true), 3);
@@ -173,7 +184,7 @@ public final class TrialSpawner {
                         this.data.totalMobsSpawned++;
                         this.data.nextMobSpawnsAt = level.getGameTime() + this.getConfig().ticksBetweenSpawn();
                         this.getConfig().spawnPotentialsDefinition().getRandom(level.getRandom()).ifPresent(entry -> {
-                            this.data.nextSpawnData = Optional.of(entry.getData());
+                            this.data.setNextSpawnData(entry.getData());
                             this.markUpdated();
                         });
                     });
@@ -434,7 +445,7 @@ public final class TrialSpawner {
             this.data.cooldownEndsAt = loaded.cooldownEndsAt;
             this.data.nextMobSpawnsAt = loaded.nextMobSpawnsAt;
             this.data.totalMobsSpawned = loaded.totalMobsSpawned;
-            this.data.nextSpawnData = loaded.nextSpawnData;
+            this.data.setNextSpawnData(loaded.nextSpawnData.orElse(null));
             this.data.ejectingLootTable = loaded.ejectingLootTable;
         }
         this.isOminous = tag.getBoolean("is_ominous");

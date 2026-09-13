@@ -57,13 +57,12 @@ public class TrialSpawnerBlock extends BaseEntityBlock {
                 if (entityId != null) {
                     BlockEntity be = level.getBlockEntity(pos);
                     if (be instanceof TrialSpawnerBlockEntity spawnerBE) {
-                        // Set the spawn data to the egg's entity type
+                        // Replace both configurations so future waves keep the egg's entity type.
                         CompoundTag entityTag = new CompoundTag();
                         entityTag.putString("id", entityId.toString());
                         SpawnData spawnData = new SpawnData();
                         spawnData.getEntityToSpawn().merge(entityTag);
-                        spawnerBE.getTrialSpawner().getData().setNextSpawnData(spawnData);
-                        spawnerBE.markUpdated();
+                        spawnerBE.getTrialSpawner().setSpawnData(spawnData);
                     }
                 }
             }

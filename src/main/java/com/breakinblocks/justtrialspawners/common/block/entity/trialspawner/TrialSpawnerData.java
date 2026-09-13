@@ -51,8 +51,9 @@ public class TrialSpawnerData {
     protected double spin;
     protected double oSpin;
 
-    public void setNextSpawnData(SpawnData spawnData) {
-        this.nextSpawnData = Optional.of(spawnData);
+    public void setNextSpawnData(@Nullable SpawnData spawnData) {
+        this.nextSpawnData = Optional.ofNullable(spawnData);
+        this.displayEntity = null;
     }
 
     public void reset() {
@@ -61,7 +62,7 @@ public class TrialSpawnerData {
         this.nextMobSpawnsAt = 0L;
         this.cooldownEndsAt = 0L;
         this.currentMobs.clear();
-        this.nextSpawnData = Optional.empty();
+        this.setNextSpawnData(null);
     }
 
     public boolean hasMobToSpawn(TrialSpawner spawner, RandomSource random) {
@@ -160,7 +161,7 @@ public class TrialSpawnerData {
         });
 
         if (!spawner.getOminousConfig().spawnPotentialsDefinition().isEmpty()) {
-            this.nextSpawnData = Optional.empty();
+            this.setNextSpawnData(null);
         }
 
         this.totalMobsSpawned = 0;
