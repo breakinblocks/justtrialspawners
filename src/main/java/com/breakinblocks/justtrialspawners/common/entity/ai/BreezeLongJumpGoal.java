@@ -3,10 +3,8 @@ package com.breakinblocks.justtrialspawners.common.entity.ai;
 import com.breakinblocks.justtrialspawners.common.entity.BreezeEntity;
 import com.breakinblocks.justtrialspawners.registry.ModSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.ClipContext;
@@ -24,6 +22,7 @@ public class BreezeLongJumpGoal extends Goal {
     private static final int JUMP_COOLDOWN_HURT = 2;
     private static final int INHALING_DURATION = 10;
     private static final float MAX_JUMP_VELOCITY = 1.4F;
+    private static final double GRAVITY = 0.08;
     private static final int REQUIRED_AIR_BLOCKS = 4;
     private static final int[] ALLOWED_ANGLES = {40, 55, 60, 75, 80};
 
@@ -31,6 +30,7 @@ public class BreezeLongJumpGoal extends Goal {
     private int cooldownTimer;
     private int inhalingTimer;
     private Vec3 jumpTarget;
+    private boolean discardedFrictionBeforeJump;
     private Phase phase = Phase.IDLE;
 
     private enum Phase { IDLE, INHALING, JUMPING, LANDING }
@@ -57,13 +57,13 @@ public class BreezeLongJumpGoal extends Goal {
 
         // Calculate jump target - a point behind the target
         Vec3 targetPos = randomPointBehindTarget(target);
-        BlockPos landingPos = snapToSurface(targetPos);
+        Vec3 landingPos = snapToSurface(targetPos);
         if (landingPos == null) return false;
 
         // Check that we have line of sight to landing
-        if (!hasLineOfSight(landingPos.getCenter())) return false;
+        if (!hasLineOfSight(landingPos)) return false;
 
-        this.jumpTarget = landingPos.getCenter();
+        this.jumpTarget = landingPos;
         return true;
     }
 
@@ -74,6 +74,8 @@ public class BreezeLongJumpGoal extends Goal {
 
     @Override
     public void start() {
+        this.breeze.getNavigation().stop();
+        this.discardedFrictionBeforeJump = this.breeze.shouldDiscardFriction();
         this.phase = Phase.INHALING;
         this.inhalingTimer = INHALING_DURATION;
         this.breeze.level().playSound(null, this.breeze,
@@ -99,6 +101,8 @@ public class BreezeLongJumpGoal extends Goal {
                     if (jumpVec != null) {
                         this.breeze.playSound(ModSounds.BREEZE_JUMP.get(), 1.0F, 1.0F);
                         this.breeze.setDeltaMovement(jumpVec);
+                        this.breeze.setDiscardFriction(true);
+                        this.breeze.setOnGround(false);
                         this.breeze.setNoGravity(false);
                         this.phase = Phase.JUMPING;
                     } else {
@@ -117,6 +121,7 @@ public class BreezeLongJumpGoal extends Goal {
 
     @Override
     public void stop() {
+        this.breeze.setDiscardFriction(this.discardedFrictionBeforeJump);
         this.phase = Phase.IDLE;
         this.jumpTarget = null;
         boolean wasHurt = this.breeze.getLastHurtByMobTimestamp() > this.breeze.tickCount - 20;
@@ -137,12 +142,12 @@ public class BreezeLongJumpGoal extends Goal {
         return target.position().add(dx, 0, dz);
     }
 
-    private BlockPos snapToSurface(Vec3 pos) {
+    private Vec3 snapToSurface(Vec3 pos) {
         ClipContext ctx = new ClipContext(pos, pos.add(0, -10, 0),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.breeze);
         HitResult result = this.breeze.level().clip(ctx);
         if (result.getType() == HitResult.Type.BLOCK) {
-            return BlockPos.containing(result.getLocation()).above();
+            return result.getLocation();
         }
         return null;
     }
@@ -170,7 +175,6 @@ public class BreezeLongJumpGoal extends Goal {
     private Vec3 calculateJumpVector(Vec3 target) {
         Vec3 from = this.breeze.position();
         Vec3 diff = target.subtract(from);
-        double horizontalDist = Math.sqrt(diff.x * diff.x + diff.z * diff.z);
 
         // Try different launch angles
         int[] shuffled = ALLOWED_ANGLES.clone();
@@ -182,26 +186,31 @@ public class BreezeLongJumpGoal extends Goal {
         }
 
         for (int angleDeg : shuffled) {
-            double angleRad = Math.toRadians(angleDeg);
-            double sinAngle = Math.sin(angleRad);
-            double cosAngle = Math.cos(angleRad);
-
-            // Calculate required velocity for ballistic trajectory
-            double vy = horizontalDist * sinAngle / cosAngle;
-            double speed = horizontalDist / (cosAngle * 2.0 * sinAngle / 0.08);
-
-            if (speed > 0) {
-                double velocity = Math.sqrt(speed * 0.08);
-                if (velocity <= MAX_JUMP_VELOCITY) {
-                    Vec3 horizontal = new Vec3(diff.x, 0, diff.z).normalize().scale(velocity * cosAngle);
-                    return new Vec3(horizontal.x, velocity * sinAngle, horizontal.z);
-                }
+            Vec3 velocity = calculateJumpVectorForAngle(diff, angleDeg);
+            if (velocity != null) {
+                return velocity;
             }
         }
 
-        // Fallback: simple arc
-        double speed = Math.min(MAX_JUMP_VELOCITY, horizontalDist * 0.1);
-        Vec3 horizontal = new Vec3(diff.x, 0, diff.z).normalize().scale(speed);
-        return new Vec3(horizontal.x, Math.min(MAX_JUMP_VELOCITY, 0.5 + diff.y * 0.1), horizontal.z);
+        return null;
+    }
+
+    @javax.annotation.Nullable
+    static Vec3 calculateJumpVectorForAngle(Vec3 diff, int angleDegrees) {
+        double distance = diff.horizontalDistance();
+        if (distance < 1.0E-6) return null;
+
+        double angle = Math.toRadians(angleDegrees);
+        double drop = distance * Math.tan(angle) - diff.y;
+        if (drop <= 0.0) return null;
+
+        // Movement precedes gravity each tick: drop = gravity * t * (t - 1) / 2.
+        // Friction is disabled during the jump, as it is for vanilla long jumps.
+        double flightTime = (1.0 + Math.sqrt(1.0 + 8.0 * drop / GRAVITY)) / 2.0;
+        double horizontalSpeed = distance / flightTime;
+        double speed = horizontalSpeed / Math.cos(angle);
+        if (!Double.isFinite(speed) || speed > MAX_JUMP_VELOCITY) return null;
+
+        return new Vec3(diff.x / flightTime, horizontalSpeed * Math.tan(angle), diff.z / flightTime);
     }
 }
