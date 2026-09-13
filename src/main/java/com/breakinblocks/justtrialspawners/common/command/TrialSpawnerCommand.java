@@ -299,7 +299,14 @@ public class TrialSpawnerCommand {
 
         try {
             switch (key) {
-                case "spawn_range" -> configTag.putInt(key, Integer.parseInt(valueStr));
+                case "spawn_range" -> {
+                    int range = Integer.parseInt(valueStr);
+                    if (range < 1 || range > 32) {
+                        ctx.getSource().sendFailure(Component.literal("Spawn range must be between 1 and 32 blocks."));
+                        return 0;
+                    }
+                    configTag.putInt(key, range);
+                }
                 case "total_mobs", "simultaneous_mobs", "total_mobs_added_per_player",
                      "simultaneous_mobs_added_per_player" -> configTag.putFloat(key, Float.parseFloat(valueStr));
                 case "ticks_between_spawn" -> configTag.putInt(key, Integer.parseInt(valueStr));
@@ -344,7 +351,7 @@ public class TrialSpawnerCommand {
         info.append("Trial Spawner at ").append(pos.toShortString()).append(":\n");
         info.append("  State: ").append(spawnerBE.getState().getSerializedName()).append("\n");
         info.append("  Ominous: ").append(spawnerTag.getBoolean("is_ominous")).append("\n");
-        info.append("  Spawn Range: ").append(configTag.getInt("spawn_range")).append("\n");
+        info.append("  Spawn Range: ").append(spawnerBE.getTrialSpawner().getNormalConfig().spawnRange()).append("\n");
         info.append("  Total Mobs: ").append(configTag.getFloat("total_mobs")).append("\n");
         info.append("  Simultaneous Mobs: ").append(configTag.getFloat("simultaneous_mobs")).append("\n");
         info.append("  Ticks Between Spawn: ").append(configTag.getInt("ticks_between_spawn")).append("\n");

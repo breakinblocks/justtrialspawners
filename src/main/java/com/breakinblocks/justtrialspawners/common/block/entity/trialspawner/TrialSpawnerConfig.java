@@ -29,6 +29,8 @@ public class TrialSpawnerConfig {
     public static final String TAG_ITEMS_TO_DROP_WHEN_OMINOUS = "items_to_drop_when_ominous";
 
     private float totalMobs = 6.0f;
+    // Zero means this spawner follows the server-wide default.
+    private int spawnRange;
     private float simultaneousMobs = 2.0f;
     private float totalMobsAddedPerPlayer = 2.0f;
     private float simultaneousMobsAddedPerPlayer = 1.0f;
@@ -64,7 +66,7 @@ public class TrialSpawnerConfig {
         return config;
     }
 
-    public int spawnRange() { return JTSConfig.spawnRange(); }
+    public int spawnRange() { return spawnRange > 0 ? spawnRange : JTSConfig.spawnRange(); }
     public float totalMobs() { return totalMobs; }
     public float simultaneousMobs() { return simultaneousMobs; }
     public float totalMobsAddedPerPlayer() { return totalMobsAddedPerPlayer; }
@@ -85,7 +87,7 @@ public class TrialSpawnerConfig {
 
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
-        tag.putInt(TAG_SPAWN_RANGE, spawnRange());
+        if (spawnRange > 0) tag.putInt(TAG_SPAWN_RANGE, spawnRange);
         tag.putFloat(TAG_TOTAL_MOBS, totalMobs);
         tag.putFloat(TAG_SIMULTANEOUS_MOBS, simultaneousMobs);
         tag.putFloat(TAG_TOTAL_MOBS_ADDED_PER_PLAYER, totalMobsAddedPerPlayer);
@@ -125,6 +127,9 @@ public class TrialSpawnerConfig {
 
     public static TrialSpawnerConfig load(CompoundTag tag, boolean ominous) {
         TrialSpawnerConfig config = ominous ? createOminousDefault() : new TrialSpawnerConfig();
+        if (tag.contains(TAG_SPAWN_RANGE, 99)) {
+            config.spawnRange = Math.max(1, Math.min(32, tag.getInt(TAG_SPAWN_RANGE)));
+        }
         if (tag.contains(TAG_TOTAL_MOBS)) config.totalMobs = tag.getFloat(TAG_TOTAL_MOBS);
         if (tag.contains(TAG_SIMULTANEOUS_MOBS)) config.simultaneousMobs = tag.getFloat(TAG_SIMULTANEOUS_MOBS);
         if (tag.contains(TAG_TOTAL_MOBS_ADDED_PER_PLAYER)) config.totalMobsAddedPerPlayer = tag.getFloat(TAG_TOTAL_MOBS_ADDED_PER_PLAYER);
