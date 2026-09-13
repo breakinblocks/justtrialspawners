@@ -96,17 +96,18 @@ public class TrialSpawnerData {
                 level, pos, spawner.getRequiredPlayerRange(), true);
 
         // Check for ominous effect conversion
+        boolean becameOminous = false;
         if (TrialSpawner.isOminousModeEnabled() && !spawner.isOminous() && !detected.isEmpty()) {
             Optional<Player> ominousPlayer = findPlayerWithOminousEffect(level, detected);
             if (ominousPlayer.isPresent()) {
                 Player player = ominousPlayer.get();
                 transformBadOmenIntoTrialOmen(player);
                 spawner.applyOminous(level, pos);
-                return;
+                becameOminous = true;
             }
         }
 
-        if (spawner.getState().equals(TrialSpawnerState.COOLDOWN)) return;
+        if (spawner.getState().equals(TrialSpawnerState.COOLDOWN) && !becameOminous) return;
 
         boolean wasEmpty = this.detectedPlayers.isEmpty();
         List<UUID> playersToAdd = wasEmpty ? detected :
@@ -116,6 +117,7 @@ public class TrialSpawnerData {
             this.nextMobSpawnsAt = Math.max(level.getGameTime() + 40L, this.nextMobSpawnsAt);
             int levelEventId = spawner.isOminous() ? 3019 : 3013;
             level.levelEvent(levelEventId, pos, this.detectedPlayers.size());
+            spawner.markUpdated();
         }
     }
 
