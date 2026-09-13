@@ -56,7 +56,11 @@ When a player with Bad Omen enters a trial spawner's detection range, their Bad 
 /trialspawner setconfig <pos> <key> <val>  - Set a config value
 /trialspawner info <pos>                   - Show current configuration
 /trialspawner clearmobs <pos>              - Clear all spawn potentials
+/trialspawner appearance <pos> <model>     - Set a spawner or vault's appearance
+/trialspawner appearance <pos> reset       - Restore its default appearance
 ```
+
+Spawners and vaults support individual resource-pack textures and models, including state-specific variants. See [custom appearances](docs/appearances.md) for commands, included examples, and the resource-pack format.
 
 ## Dependencies
 

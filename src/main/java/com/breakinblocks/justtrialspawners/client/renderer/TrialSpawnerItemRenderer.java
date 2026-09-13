@@ -1,5 +1,6 @@
 package com.breakinblocks.justtrialspawners.client.renderer;
 
+import com.breakinblocks.justtrialspawners.common.block.entity.AppearanceBlockEntity;
 import com.breakinblocks.justtrialspawners.util.TrialSpawnerNbtHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -9,10 +10,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -41,8 +44,13 @@ public class TrialSpawnerItemRenderer extends BlockEntityWithoutLevelRenderer {
         // Render the block model
         var blockItem = (net.minecraft.world.item.BlockItem) stack.getItem();
         var blockState = blockItem.getBlock().defaultBlockState();
+        CompoundTag blockEntityTag = stack.getTagElement("BlockEntityTag");
+        String appearanceId = blockEntityTag == null ? "" : blockEntityTag.getString(AppearanceBlockEntity.TAG_APPEARANCE);
+        ResourceLocation appearance = appearanceId.isBlank() ? null : ResourceLocation.tryParse(appearanceId);
+        ModelData modelData = appearance == null ? ModelData.EMPTY
+                : ModelData.builder().with(AppearanceBlockEntity.APPEARANCE, appearance).build();
         poseStack.pushPose();
-        blockRenderer.renderSingleBlock(blockState, poseStack, buffer, packedLight, packedOverlay);
+        blockRenderer.renderSingleBlock(blockState, poseStack, buffer, packedLight, packedOverlay, modelData, null);
         poseStack.popPose();
 
         // Check for mob NBT data

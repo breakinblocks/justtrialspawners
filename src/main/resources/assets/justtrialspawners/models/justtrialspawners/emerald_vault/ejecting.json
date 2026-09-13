@@ -1,0 +1,7 @@
+{
+  "parent": "justtrialspawners:block/vault_ejecting",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "side": "minecraft:block/emerald_block"
+  }
+}

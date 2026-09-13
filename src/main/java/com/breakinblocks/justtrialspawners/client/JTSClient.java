@@ -1,6 +1,7 @@
 package com.breakinblocks.justtrialspawners.client;
 
 import com.breakinblocks.justtrialspawners.JustTrialSpawners;
+import com.breakinblocks.justtrialspawners.client.model.AppearanceModel;
 import com.breakinblocks.justtrialspawners.client.model.BreezeModel;
 import com.breakinblocks.justtrialspawners.client.renderer.BoggedRenderer;
 import com.breakinblocks.justtrialspawners.client.renderer.BreezeRenderer;
@@ -10,9 +11,13 @@ import com.breakinblocks.justtrialspawners.client.renderer.WindChargeRenderer;
 import com.breakinblocks.justtrialspawners.registry.ModBlockEntities;
 import com.breakinblocks.justtrialspawners.registry.ModBlocks;
 import com.breakinblocks.justtrialspawners.registry.ModEntities;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.resources.model.ModelBakery;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,6 +28,19 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class JTSClient {
 
     public static void init(IEventBus modEventBus) {
+    }
+
+    @SubscribeEvent
+    public static void onRegisterAppearanceModels(ModelEvent.RegisterAdditional event) {
+        Minecraft.getInstance().getResourceManager()
+                .listResources("models/justtrialspawners", id -> id.getPath().endsWith(".json"))
+                .keySet().forEach(file -> event.register(new ResourceLocation(file.getNamespace(),
+                        file.getPath().substring("models/".length(), file.getPath().length() - ".json".length()))));
+    }
+
+    @SubscribeEvent
+    public static void onBakeAppearanceModels(ModelEvent.ModifyBakingResult event) {
+        AppearanceModel.wrapModels(event.getModels(), event.getModels().get(ModelBakery.MISSING_MODEL_LOCATION));
     }
 
     @SubscribeEvent

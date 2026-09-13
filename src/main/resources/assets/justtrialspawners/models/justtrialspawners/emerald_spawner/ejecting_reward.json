@@ -1,0 +1,7 @@
+{
+  "parent": "justtrialspawners:block/trial_spawner_ejecting_reward",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "side": "minecraft:block/emerald_block"
+  }
+}

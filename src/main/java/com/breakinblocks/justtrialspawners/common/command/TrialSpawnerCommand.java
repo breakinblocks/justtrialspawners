@@ -2,6 +2,7 @@ package com.breakinblocks.justtrialspawners.common.command;
 
 import com.breakinblocks.justtrialspawners.JustTrialSpawners;
 import com.breakinblocks.justtrialspawners.common.block.TrialSpawnerBlock;
+import com.breakinblocks.justtrialspawners.common.block.entity.AppearanceBlockEntity;
 import com.breakinblocks.justtrialspawners.common.block.entity.TrialSpawnerBlockEntity;
 import com.breakinblocks.justtrialspawners.common.block.entity.trialspawner.TrialSpawnerConfig;
 import com.breakinblocks.justtrialspawners.integration.FTBLibraryIntegration;
@@ -54,6 +55,19 @@ public class TrialSpawnerCommand {
 
         dispatcher.register(Commands.literal("trialspawner")
                 .requires(source -> source.hasPermission(2))
+
+                // Applies to both trial spawners and vaults.
+                .then(Commands.literal("appearance")
+                        .then(Commands.argument("pos", BlockPosArgument.blockPos())
+                                .then(Commands.literal("reset")
+                                        .executes(ctx -> setAppearance(ctx, null)))
+                                .then(Commands.argument("model", ResourceLocationArgument.id())
+                                        .suggests((ctx, builder) -> {
+                                            builder.suggest("justtrialspawners:justtrialspawners/emerald_spawner");
+                                            builder.suggest("justtrialspawners:justtrialspawners/emerald_vault");
+                                            return builder.buildFuture();
+                                        })
+                                        .executes(ctx -> setAppearance(ctx, ResourceLocationArgument.getId(ctx, "model"))))))
 
                 // /trialspawner edit - edit held trial spawner item, or /trialspawner edit <pos> for placed block
                 .then(Commands.literal("edit")
@@ -137,6 +151,25 @@ public class TrialSpawnerCommand {
 
         FTBLibraryIntegration.openItemNBTEditor(player, held);
         ctx.getSource().sendSuccess(() -> Component.literal("Opened trial spawner item editor"), true);
+        return 1;
+    }
+
+    private static int setAppearance(CommandContext<CommandSourceStack> ctx, @javax.annotation.Nullable ResourceLocation model)
+            throws CommandSyntaxException {
+        BlockPos pos = BlockPosArgument.getLoadedBlockPos(ctx, "pos");
+        BlockEntity blockEntity = ctx.getSource().getLevel().getBlockEntity(pos);
+        if (!(blockEntity instanceof AppearanceBlockEntity appearanceBlock)) {
+            ctx.getSource().sendFailure(Component.literal("Block at " + pos.toShortString() + " is not a trial spawner or vault"));
+            return 0;
+        }
+        if (model != null && !model.getPath().startsWith("justtrialspawners/")) {
+            ctx.getSource().sendFailure(Component.literal("Appearance models must use <namespace>:justtrialspawners/<name>"));
+            return 0;
+        }
+        appearanceBlock.setAppearance(model);
+        ctx.getSource().sendSuccess(() -> Component.literal(model == null
+                ? "Reset appearance at " + pos.toShortString()
+                : "Set appearance at " + pos.toShortString() + " to " + model), true);
         return 1;
     }
 

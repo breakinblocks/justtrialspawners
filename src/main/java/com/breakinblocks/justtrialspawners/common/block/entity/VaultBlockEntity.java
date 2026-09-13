@@ -22,7 +22,6 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -32,7 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class VaultBlockEntity extends BlockEntity {
+public class VaultBlockEntity extends AppearanceBlockEntity {
     private static final int UNLOCKING_DELAY_TICKS = 14;
     private static final int DELAY_BETWEEN_EJECTIONS_TICKS = 20;
     private static final int UPDATE_CONNECTED_PLAYERS_TICK_RATE = 20;
@@ -253,6 +252,7 @@ public class VaultBlockEntity extends BlockEntity {
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
+        saveAppearance(tag);
         tag.put("shared_data", sharedData.save());
         tag.put("config", config.save());
         return tag;

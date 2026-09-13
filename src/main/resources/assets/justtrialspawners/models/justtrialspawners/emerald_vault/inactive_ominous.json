@@ -1,0 +1,7 @@
+{
+  "parent": "justtrialspawners:block/vault_ominous",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "side": "minecraft:block/emerald_block"
+  }
+}
