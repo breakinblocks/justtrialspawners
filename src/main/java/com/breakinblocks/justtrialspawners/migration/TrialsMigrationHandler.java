@@ -1,6 +1,7 @@
 package com.breakinblocks.justtrialspawners.migration;
 
 import com.breakinblocks.justtrialspawners.JustTrialSpawners;
+import com.breakinblocks.justtrialspawners.config.JTSConfig;
 import com.breakinblocks.justtrialspawners.registry.ModBlockEntities;
 import com.breakinblocks.justtrialspawners.registry.ModBlocks;
 import com.breakinblocks.justtrialspawners.registry.ModEnchantments;
@@ -213,7 +214,7 @@ public class TrialsMigrationHandler {
      * before the palette is processed.
      */
     public static void rewriteChunkNbt(CompoundTag chunkTag) {
-        if (chunkTag == null) return;
+        if (!JTSConfig.trialsMigrationEnabled() || chunkTag == null) return;
 
         // Rewrite block palette Names in each section
         Tag sectionsTag = chunkTag.get("sections");
