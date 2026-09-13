@@ -127,8 +127,8 @@ public final class TrialsNbtConverter {
      * Converts a Trials mod vault NBT tag to our format.
      * Returns true if the vault was ominous (for blockstate fixup).
      */
-    public static boolean convertVault(CompoundTag tag) {
-        boolean isOminous = tag.contains("Ominous") && tag.getBoolean("Ominous");
+    public static boolean convertVault(CompoundTag tag, boolean ominousBlock) {
+        boolean isOminous = ominousBlock || tag.getBoolean("Ominous");
 
         // Build config
         CompoundTag configTag = new CompoundTag();
@@ -136,7 +136,11 @@ public final class TrialsNbtConverter {
                 ? "justtrialspawners:chests/trial_chambers/reward_ominous"
                 : "justtrialspawners:chests/trial_chambers/reward";
         configTag.putString("loot_table", lootTable);
-        configTag.putString("key_item", "justtrialspawners:trial_key");
+        CompoundTag keyItem = new CompoundTag();
+        keyItem.putString("id", isOminous
+                ? "justtrialspawners:ominous_trial_key" : "justtrialspawners:trial_key");
+        keyItem.putByte("Count", (byte) 1);
+        configTag.put("key_item", keyItem);
 
         // Build server_data (empty - will reset)
         CompoundTag serverData = new CompoundTag();
