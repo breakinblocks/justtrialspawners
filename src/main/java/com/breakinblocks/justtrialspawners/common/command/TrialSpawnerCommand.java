@@ -387,6 +387,7 @@ public class TrialSpawnerCommand {
         CompoundTag ominousConfig = spawnerTag.getCompound("ominous_config");
         ominousConfig.put("spawn_potentials", new ListTag());
         spawnerTag.put("ominous_config", ominousConfig);
+        spawnerTag.getCompound("data").remove("spawn_data");
 
         tag.put("trial_spawner", spawnerTag);
         spawnerBE.load(tag);

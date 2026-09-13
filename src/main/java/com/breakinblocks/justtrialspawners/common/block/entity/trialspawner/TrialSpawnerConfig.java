@@ -92,31 +92,27 @@ public class TrialSpawnerConfig {
         tag.putFloat(TAG_SIMULTANEOUS_MOBS_ADDED_PER_PLAYER, simultaneousMobsAddedPerPlayer);
         tag.putInt(TAG_TICKS_BETWEEN_SPAWN, ticksBetweenSpawn);
 
-        if (!spawnPotentials.isEmpty()) {
-            ListTag potentialsTag = new ListTag();
-            spawnPotentials.unwrap().forEach(entry -> {
-                CompoundTag entryTag = new CompoundTag();
-                entryTag.putInt("weight", entry.getWeight().asInt());
-                CompoundTag dataTag = new CompoundTag();
-                CompoundTag entityTag = entry.getData().getEntityToSpawn();
-                dataTag.put("entity", entityTag.copy());
-                entry.getData().getCustomSpawnRules().ifPresent(rules -> {
-                    CompoundTag rulesTag = new CompoundTag();
-                    dataTag.put("custom_spawn_rules", rulesTag);
-                });
-                entryTag.put("data", dataTag);
-                potentialsTag.add(entryTag);
+        ListTag potentialsTag = new ListTag();
+        spawnPotentials.unwrap().forEach(entry -> {
+            CompoundTag entryTag = new CompoundTag();
+            entryTag.putInt("weight", entry.getWeight().asInt());
+            CompoundTag dataTag = new CompoundTag();
+            CompoundTag entityTag = entry.getData().getEntityToSpawn();
+            dataTag.put("entity", entityTag.copy());
+            entry.getData().getCustomSpawnRules().ifPresent(rules -> {
+                CompoundTag rulesTag = new CompoundTag();
+                dataTag.put("custom_spawn_rules", rulesTag);
             });
-            tag.put(TAG_SPAWN_POTENTIALS, potentialsTag);
-        }
+            entryTag.put("data", dataTag);
+            potentialsTag.add(entryTag);
+        });
+        tag.put(TAG_SPAWN_POTENTIALS, potentialsTag);
 
-        if (!lootTablesToEject.isEmpty()) {
-            ListTag lootTag = new ListTag();
-            for (ResourceLocation rl : lootTablesToEject) {
-                lootTag.add(StringTag.valueOf(rl.toString()));
-            }
-            tag.put(TAG_LOOT_TABLES_TO_EJECT, lootTag);
+        ListTag lootTag = new ListTag();
+        for (ResourceLocation rl : lootTablesToEject) {
+            lootTag.add(StringTag.valueOf(rl.toString()));
         }
+        tag.put(TAG_LOOT_TABLES_TO_EJECT, lootTag);
 
         tag.putString(TAG_ITEMS_TO_DROP_WHEN_OMINOUS, itemsToDropWhenOminous.toString());
 
